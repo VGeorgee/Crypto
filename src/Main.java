@@ -20,6 +20,6 @@ public class Main {
         BigInteger probablyPrime = BigInteger.probablePrime(10, new Random());
         //System.out.println(MillerRabin.isPrime(probablyPrime));
         System.out.println(MillerRabin.isPrime( BigInteger.probablePrime(10, new Random())));
-        
+        System.out.println(Prime.generatePrime(20));
     }
 }

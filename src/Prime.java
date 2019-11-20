@@ -5,11 +5,38 @@ import java.util.Random;
 
 public class Prime {
     
+    
+    public static BigInteger generatePrime(int bitSize){
+        if(bitSize < 2) {
+            bitSize = 2;
+        }
+        BigInteger b = BigInteger.ONE;
+        BigInteger two = new BigInteger("2");
+        
+        for(int i = 0; i < bitSize; i++){
+            b = b.multiply(two);
+        }
+         b = b.subtract(BigInteger.ONE);
+         
+        while(!MillerRabin.isPrime(b, 1)){
+            b = b.subtract(two);
+        }
+        
+        return b;
+    }
+    
+    public static BigInteger getPrimeFromBigInteger(int bitSize){
+        return BigInteger.probablePrime(bitSize, new Random());
+    }
+    
+    
 }
 
 
+// 13407807929942597099574024998205846127479365820592393377723561443721764030073546976801874298166903427690031858186486050853753882811946569946433649006084171
+// 13407807929942597099574024998205846127479365820592393377723561443721764030073546976801874298166903427690031858186486050853753882811946569946433649006083527
 class MillerRabin{
-    private static final int initialTries = 5;
+    private static final int initialTries = 2;
     
     public static boolean isPrime(BigInteger n, int tries){
         if(n.compareTo(BigInteger.ONE) <= 0 ) return false;
