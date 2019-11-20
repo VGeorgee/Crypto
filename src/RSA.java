@@ -42,17 +42,12 @@ public class RSA {
     }
         
     public BigInteger decrypt(BigInteger numberToDecrypt){
+        return numberToDecrypt.modPow(privateKey.d, n);
+    }
+    
+    public BigInteger decryptCRT(BigInteger numberToDecrypt){
         return Helper.FME(numberToDecrypt, privateKey.d, n);
-        //return numberToDecrypt.modPow(privateKey.d, n);
     }
-    
-    public BigInteger decryptWithCRT(BigInteger numberToDecrypt){
-        return null;
-    }
-    
-    
-    
-    
 }
 
 class PublicKey{
@@ -138,8 +133,6 @@ class Helper{
                 modularExponent = modularExponent.multiply(hatvanyok[i]).mod(modulo);
             }
         }
-        
-        
         
         return modularExponent;
     }

@@ -37,12 +37,14 @@ public class Prime {
 
 
 class MillerRabin{
+    private static BigInteger two = new BigInteger("2");
     private static final int initialTries = 2;
     
     public static boolean isPrime(BigInteger n, int tries){
         if(n.compareTo(BigInteger.ONE) <= 0 ) return false;
-        if(n.equals(new BigInteger("2")) || n.equals(new BigInteger("3")) || n.equals(new BigInteger("5")) || n.equals(new BigInteger("7"))) return true;
-        if((n.mod(new BigInteger("2"))).equals(BigInteger.ZERO)) return false;
+        
+        if(n.equals(two) || n.equals(new BigInteger("3")) || n.equals(new BigInteger("5")) || n.equals(new BigInteger("7"))) return true;
+        if((n.mod(two)).equals(BigInteger.ZERO)) return false;
         BigInteger d = getD(n);
         
         for(int i = 0; i < tries; i++){
@@ -65,7 +67,7 @@ class MillerRabin{
         } else{
             a = (new BigInteger("" + ((new Random()).nextInt(Integer.MAX_VALUE - 2)) + 2)).abs();
         }
-        BigInteger two = new BigInteger("2");
+        
         BigInteger nMinusOne = n.subtract(BigInteger.ONE);
         
         BigInteger x = a.modPow(d, n);
@@ -73,7 +75,7 @@ class MillerRabin{
         
         while(!d.equals(nMinusOne)){
             d = d.multiply(two);
-            x = x.modPow(two, n);
+            x = x.multiply(two).mod(n);
             if(x.equals(BigInteger.ONE)) return false;
             if(x.equals(nMinusOne)) return true;
         }
@@ -84,7 +86,6 @@ class MillerRabin{
     
     private static BigInteger getD(BigInteger n){
         n = n.subtract(BigInteger.ONE);
-        BigInteger two = new BigInteger("2");
         while((n.mod(two)).equals(BigInteger.ZERO)){
             n = n.divide(two);
         }

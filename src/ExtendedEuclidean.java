@@ -1,7 +1,5 @@
 
 import java.math.BigInteger;
-import java.util.Arrays;
-
 
 public class ExtendedEuclidean {
     private static final int DEFAULTARRAYSIZE = 1000;
