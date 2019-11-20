@@ -42,12 +42,16 @@ public class RSA {
     }
         
     public BigInteger decrypt(BigInteger numberToDecrypt){
-        return numberToDecrypt.modPow(privateKey.d, n);
+        return Helper.FME(numberToDecrypt, privateKey.d, n);
+        //return numberToDecrypt.modPow(privateKey.d, n);
     }
     
     public BigInteger decryptWithCRT(BigInteger numberToDecrypt){
         return null;
     }
+    
+    
+    
     
 }
 
@@ -83,9 +87,10 @@ class PrivateKey{
 
 
 
-class Helper{        
+class Helper{ 
+    private static BigInteger two = new BigInteger("2");
+    
     public static BigInteger getE(BigInteger phiN){
-        BigInteger two = new BigInteger("2");
         BigInteger bi = new BigInteger("7");
         
         while(!ExtendedEuclidean.compute(phiN, bi).remainder.equals(BigInteger.ONE)){
@@ -93,6 +98,50 @@ class Helper{
         }
         
         return bi;
+    }
+    
+    
+    public static BigInteger FME(BigInteger a, BigInteger b, BigInteger modulo){
+        boolean[] in = new boolean[32768];
+        BigInteger[] ints = new BigInteger[32768];
+        BigInteger modularExponent = BigInteger.ONE;
+        
+        
+        ints[0] = BigInteger.ONE;
+        
+        int i;
+        for(i = 1; ints[i - 1].compareTo(b) < 0; i++){
+            ints[i] = ints[i - 1].multiply(two);
+        }
+        
+        int vegsohatvany = i;
+        
+        BigInteger base = new BigInteger(b.toString());
+        for(i--; i >= 0; i--){
+            if(base.compareTo(ints[i]) >= 0){
+                in[i] = true;
+                base = base.subtract(ints[i]);
+            }
+        }
+        
+        BigInteger[] hatvanyok = new BigInteger[32768];
+        hatvanyok[0] = a;
+
+        for(i = 1; i < vegsohatvany; i++){
+            if(hatvanyok[i - 1].equals(BigInteger.ONE)){
+                hatvanyok[i] = BigInteger.ONE;
+            }else hatvanyok[i] = hatvanyok[i - 1].multiply(hatvanyok[i - 1]).mod(modulo);
+        }
+        
+        for(i = 0; i < vegsohatvany; i++){
+            if(in[i]){
+                modularExponent = modularExponent.multiply(hatvanyok[i]).mod(modulo);
+            }
+        }
+        
+        
+        
+        return modularExponent;
     }
     
 }

@@ -1,10 +1,12 @@
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 
 public class Prime {
-    
+    private static List<BigInteger> bis = new ArrayList<>();
     
     public static BigInteger generatePrime(int bitSize){
         if(bitSize < 2) {
@@ -18,9 +20,10 @@ public class Prime {
         }
          b = b.subtract(BigInteger.ONE);
          
-        while(!MillerRabin.isPrime(b, 1)){
+        while(!MillerRabin.isPrime(b, 1) || bis.contains(b)){
             b = b.subtract(two);
         }
+        bis.add(b);
         
         return b;
     }
