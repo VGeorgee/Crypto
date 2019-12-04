@@ -32,13 +32,18 @@ public class Prime {
         return BigInteger.probablePrime(bitSize, new Random());
     }
     
-    
 }
 
 
 class MillerRabin{
     private static BigInteger two = new BigInteger("2");
     private static final int initialTries = 2;
+      
+    
+    public static boolean isPrime(BigInteger n){
+        return isPrime(n, initialTries);
+    }
+    
     
     public static boolean isPrime(BigInteger n, int tries){
         if(n.compareTo(BigInteger.ONE) <= 0 ) return false;
@@ -56,10 +61,6 @@ class MillerRabin{
     }
     
     
-    public static boolean isPrime(BigInteger n){
-        return isPrime(n, initialTries);
-    }
-   
     private static boolean test(BigInteger n, BigInteger d){
         BigInteger a;
         if(n.compareTo(new BigInteger(Integer.MAX_VALUE + "")) < 0){

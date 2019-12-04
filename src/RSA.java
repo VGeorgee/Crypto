@@ -1,5 +1,6 @@
 
 import java.math.BigInteger;
+import sun.java2d.pipe.hw.ExtendedBufferCapabilities;
 
 
 
@@ -10,9 +11,12 @@ public class RSA {
     PrivateKey privateKey;
     BigInteger n;
     
+    BigInteger p;
+    BigInteger q;
+    
     
     public void generateKeys(){
-        generateKeys(Prime.getPrimeFromBigInteger(initialBitSize), Prime.getPrimeFromBigInteger(initialBitSize));
+        generateKeys(Prime.generatePrime(initialBitSize), Prime.generatePrime(initialBitSize));
     }
     
     public void generateKeys(BigInteger a, BigInteger b){
@@ -26,7 +30,8 @@ public class RSA {
         BigInteger phiN = a.subtract(BigInteger.ONE).multiply(b.subtract(BigInteger.ONE));
         
         BigInteger d = ExtendedEuclidean.compute(phiN, e).Y.mod(phiN);
-        
+        p = a;
+        q = b;
         publicKey = new PublicKey(e, N);
         privateKey = new PrivateKey(d);
         
@@ -46,7 +51,17 @@ public class RSA {
     }
     
     public BigInteger decryptCRT(BigInteger numberToDecrypt){
-        return Helper.FME(numberToDecrypt, privateKey.d, n);
+        
+        BigInteger mp = numberToDecrypt.modPow((privateKey.d.mod(p.subtract(BigInteger.ONE))), p);
+        BigInteger mq = numberToDecrypt.modPow((privateKey.d.mod(q.subtract(BigInteger.ONE))), q);
+        
+        ExtendedEuclidean ee = ExtendedEuclidean.compute(p, q);
+        
+        BigInteger yp = ee.X;
+        BigInteger yq = ee.Y;
+       // m ≡ mp· yq· q + mq· yp· p (mod M)
+
+        return (mp.multiply(yq).multiply(q).add(mq.multiply(yp).multiply(p))).mod(q.multiply(p));
     }
 }
 
