@@ -1,11 +1,10 @@
 
 import java.math.BigInteger;
-import sun.java2d.pipe.hw.ExtendedBufferCapabilities;
 
 
 
 public class RSA {
-    private static final int initialBitSize = 128;
+    private static final int INITIALBITSIZE = 128;
     
     PublicKey publicKey;
     PrivateKey privateKey;
@@ -16,7 +15,7 @@ public class RSA {
     
     
     public void generateKeys(){
-        generateKeys(Prime.generatePrime(initialBitSize), Prime.generatePrime(initialBitSize));
+        generateKeys(Prime.generatePrime(INITIALBITSIZE), Prime.generatePrime(INITIALBITSIZE));
     }
     
     public void generateKeys(BigInteger a, BigInteger b){
@@ -37,6 +36,8 @@ public class RSA {
         
     }
     
+    
+    
     public BigInteger encrypt(int numberToEncrypt){
         BigInteger number = new BigInteger(numberToEncrypt + "");
         return encrypt(number);
@@ -45,6 +46,9 @@ public class RSA {
     public BigInteger encrypt(BigInteger numberToEncrypt){
         return numberToEncrypt.modPow(publicKey.e, publicKey.n);
     }
+    
+    
+    
         
     public BigInteger decrypt(BigInteger numberToDecrypt){
         return numberToDecrypt.modPow(privateKey.d, n);
@@ -59,8 +63,7 @@ public class RSA {
         
         BigInteger yp = ee.X;
         BigInteger yq = ee.Y;
-       // m ≡ mp· yq· q + mq· yp· p (mod M)
-
+        
         return (mp.multiply(yq).multiply(q).add(mq.multiply(yp).multiply(p))).mod(q.multiply(p));
     }
 }

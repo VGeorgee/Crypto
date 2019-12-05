@@ -1,26 +1,71 @@
 
 import java.math.BigInteger;
-import java.util.Random;
-
-
-
+import java.util.Scanner;
 
 
 
 public class Main {
+    
+    private static String[] options = new String[]{"1 - Miller-Rabin Prime Test", "2 - Extended Euclidean Algorithm", "3 - RSA encrypt", "4 - exit"};
+    
+    
+    public static void printOptions(){
+        System.out.println("---------------------------");
+        for(String s : options){
+            System.out.println(s);
+        }
+        System.out.println("---------------------------");
+    }
+    
+    private static int getIndex(String s){
+        for(int i = 0; i < options.length; i++)
+            if(options[i].contains(s))
+                return i;
+        return -1;
+    }
+    
+    
     public static void main(String[] args) {
+        
+        Scanner sc = new Scanner(System.in);
+        String input;
+        int index;
+        do{
+           printOptions();
+           index = getIndex(sc.nextLine());
+           System.out.println("you choose " + options[index]);
+           
+           switch(index){
+               case 0: {
+                   String[] in = sc.nextLine().split(" ");
+                   System.out.println(MillerRabin.isPrime(new BigInteger(in[0])));
+                   break;
+               }
+               case 1: {
+                   String[] in = sc.nextLine().split(" ");
+                   System.out.println(ExtendedEuclidean.compute(new BigInteger(in[0]), new BigInteger(in[1])));
+                   break;
+               }
+               case 2: {
+                   BigInteger b = new BigInteger(sc.nextLine());
+                   RSA r = new RSA();
+                   r.generateKeys();
+                   System.out.println(r.decrypt(r.encrypt(b)));
+                   break;
+               }
+           }
+           
+        }
+        while(index != options.length - 1);
+        
         /*
-        ExtendedEuclidean e = ExtendedEuclidean.compute(new BigInteger("435"), new BigInteger("33"));
-        System.out.println(e);
-        System.out.println((new BigInteger("3")).compareTo(BigInteger.ONE));
-
-        // */
+        
         RSA r = new RSA();
         //System.out.println(ExtendedEuclidean.compute(new BigInteger("47"), new BigInteger("252252")).X.mod(new BigInteger("252252")));
         // r.generateKeys(Prime.generatePrime(512), Prime.generatePrime(512));
         r.generateKeys();
         //r.generateKeys(Prime.generatePrime(256), Prime.generatePrime(256));
-        System.out.println(r.decryptCRT(r.encrypt(54)));
+        System.out.println(r.decryptCRT(r.encrypt(3213421)));
         
         System.out.println(r.decrypt(r.encrypt(54)));
         
@@ -30,6 +75,7 @@ public class Main {
         
         System.out.println((new BigInteger(a)).modPow(new BigInteger(b), new BigInteger(c)));
         
+        */
         
         /*
         
@@ -39,5 +85,6 @@ public class Main {
         System.out.println(MillerRabin.isPrime( BigInteger.probablePrime(10, new Random())));
         System.out.println(Prime.generatePrime(20));
          // */
+        
     }
 }
