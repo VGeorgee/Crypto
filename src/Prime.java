@@ -40,17 +40,19 @@ class MillerRabin{
     private static final int initialTries = 2;
     private static final ArrayList<BigInteger> initPrimes = new ArrayList<>();
     static{
-        boolean[] prim = new boolean[1000000];
+        System.out.println("Running Sieve of Eratosthenes");
+        boolean[] prim = new boolean[10000000];
         prim[0] = prim[1] = true;
         int i, j;
-        for(i = 2; i < 1000000; i++){
+        for(i = 2; i < 10000000; i++){
             if(prim[i] == false){
                 initPrimes.add(new BigInteger(i + ""));
-                for(j = i + i; j < 1000000; j += i){
+                for(j = i + i; j < 10000000; j += i){
                     prim[j] = true;
                 }
             }
         }
+        System.out.println("Finished running Sieve of Eratosthenes");
     }
       
     
@@ -62,13 +64,10 @@ class MillerRabin{
     public static boolean isPrime(BigInteger n, int tries){
         if(n.compareTo(BigInteger.ONE) <= 0 ) return false;
         
-        if(n.compareTo(new BigInteger("1000000")) <= 0){
+        if(n.compareTo(new BigInteger("10000000")) <= 0){
             return initPrimes.contains(n);
         }
-        /*
-        if(n.equals(two) || n.equals(new BigInteger("3")) || n.equals(new BigInteger("5")) || n.equals(new BigInteger("7")) || n.equals(new BigInteger("11"))
-                || n.equals(new BigInteger("13")) || n.equals(new BigInteger("17"))) return true;
-*/
+        
         if((n.mod(two)).equals(BigInteger.ZERO)) return false;
         BigInteger d = getD(n);
         

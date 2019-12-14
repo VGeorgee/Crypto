@@ -18,10 +18,6 @@ public class RSA {
         return "p = " + p + ", q = " + q + ", " + publicKey.toString() + ", " + privateKey.toString();
     }
     
-    
-    
-    
-    
     public void generateKeys(){
         generateKeys(Prime.generatePrime(INITIALBITSIZE), Prime.generatePrime(INITIALBITSIZE));
     }
