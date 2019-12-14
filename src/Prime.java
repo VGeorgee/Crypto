@@ -38,7 +38,7 @@ public class Prime {
 class MillerRabin{
     private static BigInteger two = new BigInteger("2");
     private static final int initialTries = 2;
-    private static final int SIEVE = 100000000;
+    private static final int SIEVE = 10000000;
     private static final ArrayList<BigInteger> initPrimes = new ArrayList<>();
     static{
         System.out.println("Running Sieve of Eratosthenes for " + SIEVE);

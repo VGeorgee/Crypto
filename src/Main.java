@@ -16,11 +16,13 @@ public class Main {
            
            switch(index){
                 case 0: {
+                    System.out.print("a: ");
                     String[] in = sc.nextLine().split(" ");
                     System.out.println(MillerRabin.isPrime(new BigInteger(in[0])));
                     break;
                 }
                 case 1: {
+                    System.out.print("a b:");
                     String[] in = sc.nextLine().split(" ");
                     System.out.println(ExtendedEuclidean.compute(new BigInteger(in[0]), new BigInteger(in[1])));
                     break;
@@ -28,7 +30,6 @@ public class Main {
                 case 2: {
                     handleRSARequest(sc);
                     break;
-
                  }
             }
         }
