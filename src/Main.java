@@ -3,13 +3,57 @@ import java.math.BigInteger;
 import java.util.Scanner;
 
 
-
 public class Main {
     
-    private static String[] options = new String[]{"1 - Miller-Rabin Prime Test", "2 - Extended Euclidean Algorithm", "3 - RSA encrypt", "4 - exit"};
+    public static void main(String[] args) {
+        MillerRabin.isPrime(BigInteger.ONE);
+        Scanner sc = new Scanner(System.in);
+        String input;
+        int index;
+        do{
+           printOptions(OPTIONS);
+           index = getIndex(sc.nextLine(), OPTIONS);
+           
+           switch(index){
+                case 0: {
+                    String[] in = sc.nextLine().split(" ");
+                    System.out.println(MillerRabin.isPrime(new BigInteger(in[0])));
+                    break;
+                }
+                case 1: {
+                    String[] in = sc.nextLine().split(" ");
+                    System.out.println(ExtendedEuclidean.compute(new BigInteger(in[0]), new BigInteger(in[1])));
+                    break;
+                }
+                case 2: {
+                    handleRSARequest(sc);
+                    break;
+
+                 }
+            }
+        }
+        while(index != OPTIONS.length - 1);
+        
+    }
     
     
-    public static void printOptions(){
+    private static String[] OPTIONS = new String[]{"1 - Miller-Rabin Prime Test", "2 - Extended Euclidean Algorithm", "3 - RSA", "4 - exit"};
+    private static String[] RSAOPTIONS = new String[] {"1 - Encrypt data", "2 - Decrypt data", "3 - exit"};
+    private static String[] ENCRYPTMESSAGES = new String[] {
+        "Set p (no input means generating random prime):",
+        "Set q (no input means generating random prime):",
+        "set e (no input means generating random number)",
+        "Set m (only digits):"
+    };
+    
+    private static String[] DECRYPTMESSAGES = new String[] {
+        "Set p:", 
+        "Set q:", 
+        "Set d:",
+        "set c"
+    };
+    
+    public static void printOptions(String[] options){
         System.out.println("---------------------------");
         for(String s : options){
             System.out.println(s);
@@ -17,7 +61,8 @@ public class Main {
         System.out.println("---------------------------");
     }
     
-    private static int getIndex(String s){
+    
+    private static int getIndex(String s, String[] options){
         for(int i = 0; i < options.length; i++)
             if(options[i].contains(s))
                 return i;
@@ -25,66 +70,124 @@ public class Main {
     }
     
     
-    public static void main(String[] args) {
-        
-        Scanner sc = new Scanner(System.in);
-        String input;
+    private static void handleRSARequest(Scanner sc){
+        System.out.println("\nselect required functionality:");
         int index;
+        
         do{
-           printOptions();
-           index = getIndex(sc.nextLine());
-           System.out.println("you choose " + options[index]);
-           
-           switch(index){
-               case 0: {
-                   String[] in = sc.nextLine().split(" ");
-                   System.out.println(MillerRabin.isPrime(new BigInteger(in[0])));
-                   break;
-               }
-               case 1: {
-                   String[] in = sc.nextLine().split(" ");
-                   System.out.println(ExtendedEuclidean.compute(new BigInteger(in[0]), new BigInteger(in[1])));
-                   break;
-               }
-               case 2: {
-                   BigInteger b = new BigInteger(sc.nextLine());
-                   RSA r = new RSA();
-                   r.generateKeys();
-                   System.out.println(r.decrypt(r.encrypt(b)));
-                   break;
-               }
-           }
-           
+            printOptions(RSAOPTIONS);
+            index = getIndex(sc.nextLine(), RSAOPTIONS);
+            
+            if(index == 0){
+                RSAEncrypt(sc);
+            }
+            else if( index == 1){
+                RSADecrypt(sc);
+            }
+            
+        }while(index != RSAOPTIONS.length - 1);
+    }
+    
+    private static BigInteger tryParse(String s){
+        BigInteger b = null;
+         try {
+            if(s.isEmpty()){
+                b = Prime.generatePrime(128);
+                System.out.println(b);
+            }
+            else{
+                b = new BigInteger(s);
+                if(!MillerRabin.isPrime(b)) {
+                    System.out.println("number is not prime!");
+                    return null;
+                }
+            }
+        } catch (Exception ex) {
+            System.out.println("wrong format!");
         }
-        while(index != options.length - 1);
-        
-        /*
-        
+        return b;
+    }
+    
+    private static void RSAEncrypt(Scanner sc){
         RSA r = new RSA();
-        //System.out.println(ExtendedEuclidean.compute(new BigInteger("47"), new BigInteger("252252")).X.mod(new BigInteger("252252")));
-        // r.generateKeys(Prime.generatePrime(512), Prime.generatePrime(512));
-        r.generateKeys();
-        //r.generateKeys(Prime.generatePrime(256), Prime.generatePrime(256));
-        System.out.println(r.decryptCRT(r.encrypt(3213421)));
+        BigInteger p = null, q = null, e = null, m, phiN = null, message = null;
         
-        System.out.println(r.decrypt(r.encrypt(54)));
+        for(int i = 0; i < ENCRYPTMESSAGES.length; i++){
+            System.out.println(ENCRYPTMESSAGES[i]);
+            if(i == 0){
+               p = tryParse(sc.nextLine());
+               if(p == null) i--;
+            }
+            else if(i == 1){
+               q = tryParse(sc.nextLine());
+               if(q == null) i--;
+            }
+            else if(i == 2){
+                phiN = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+               String s = sc.nextLine();
+               if(s.isEmpty()){
+                   System.out.println("generating e:");
+                   e = Helper.getE(phiN);
+               }
+               else{
+                   e = new BigInteger(s);
+                   if(!ExtendedEuclidean.compute(phiN, e).remainder.equals(BigInteger.ONE)){
+                       System.out.println("not valid e");
+                       i--;
+                   }
+               }
+            }
+            else if(i == 3){
+                try {
+                    message = new BigInteger(sc.nextLine());
+                } catch (Exception ex) {
+                    System.out.println("wrong input! only digits are allowed");
+                    i--;
+                }
+            }
+        }
         
-        String a = "8", b = "2365919607608589998389935433649144370716288138979924412629075017767928512326404609726635429343747062064351725055452778848776133483702891026114264414058108040800975322904866664358456402260050964629485122714679028004584583643446308171171499887281604645447180776564777124611321937190806659824977436023681002707497430074622146700058148610986115720695928142351898468916026607273505921543541889014564885943378256352415387544737444480635439137560625876648852417586982997895665537053700169164655378838969407666811476490382525934509305789751872982500630548019057360094946204098582494682605619842379452480441229857942866675243", c = "7097758822825769995169806300947433112148864416939773237887225053303785536979213829179906288031241186193055175166358336546328400451108673078342793242174324122402925968714599993075369206780152893888455368144037084013753750930338924513514499661844813936341542329694331373833965811572419979474932308071043008122665017903069475947877961975590922692531662492356116648956421278161405845480998898604892494566290442669097236960272540513277978363365744376919500845119552195002940368169719880662964233602542553576474895953015686604827351846142682692325340045352059730551108520909433402330154375676080601988480584055548630332455";
+        r.generateKeys(p, q, e);
+        System.out.println(r);
+        System.out.println("___________________________________________");
+        System.out.println("\nENCRYPTED DATA = " + r.encrypt(message));
+        System.out.println("___________________________________________");
+    }
+    
+    
+    private static void RSADecrypt(Scanner sc){
+        RSA r = new RSA();
+        BigInteger p = null, q = null, d = null, phiN = null, c = null;
         
-        System.out.println(Helper.FME(new BigInteger(a), new BigInteger(b), new BigInteger(c)));
+        for(int i = 0; i < DECRYPTMESSAGES.length; i++){
+            System.out.println(DECRYPTMESSAGES[i]);
+            if(i == 0){
+               p = tryParse(sc.nextLine());
+               if(p == null) i--;
+            }
+            else if(i == 1){
+               q = tryParse(sc.nextLine());
+               if(q == null) i--;
+            }
+            else if(i == 2){
+                phiN = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+                d = new BigInteger(sc.nextLine());
+            }
+            else if(i == 3){
+                try {
+                    c = new BigInteger(sc.nextLine());
+                } catch (Exception ex) {
+                    System.out.println("wrong input! only digits are allowed");
+                    i--;
+                }
+            }
+        }
         
-        System.out.println((new BigInteger(a)).modPow(new BigInteger(b), new BigInteger(c)));
-        
-        */
-        
-        /*
-        
-        BigInteger definitelyNotPrime = new BigInteger("129");
-        BigInteger probablyPrime = BigInteger.probablePrime(10, new Random());
-        //System.out.println(MillerRabin.isPrime(probablyPrime));
-        System.out.println(MillerRabin.isPrime( BigInteger.probablePrime(10, new Random())));
-        System.out.println(Prime.generatePrime(20));
-         // */
+        r.generateKeysForDecrypt(p, q, d);
+        System.out.println(r);
+        System.out.println("___________________________________________");
+        System.out.println("DECRYPTED DATA = " + r.decrypt(c));
+        System.out.println("___________________________________________");
         
     }
 }

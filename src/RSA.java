@@ -12,6 +12,14 @@ public class RSA {
     
     BigInteger p;
     BigInteger q;
+
+    @Override
+    public String toString() {
+        return "p = " + p + ", q = " + q + ", " + publicKey.toString() + ", " + privateKey.toString();
+    }
+    
+    
+    
     
     
     public void generateKeys(){
@@ -36,7 +44,18 @@ public class RSA {
         
     }
     
-    
+     public void generateKeysForDecrypt(BigInteger a, BigInteger b, BigInteger d){
+        BigInteger N = a.multiply(b);
+        this.n = N;
+        BigInteger phiN = a.subtract(BigInteger.ONE).multiply(b.subtract(BigInteger.ONE));
+        
+        BigInteger e = ExtendedEuclidean.compute(phiN, d).Y.mod(phiN);
+        p = a;
+        q = b;
+        publicKey = new PublicKey(e, N);
+        privateKey = new PrivateKey(d);
+        
+    }
     
     public BigInteger encrypt(int numberToEncrypt){
         BigInteger number = new BigInteger(numberToEncrypt + "");
@@ -48,8 +67,6 @@ public class RSA {
     }
     
     
-    
-        
     public BigInteger decrypt(BigInteger numberToDecrypt){
         return numberToDecrypt.modPow(privateKey.d, n);
     }
